@@ -1,0 +1,60 @@
+- name: Install development packages
+  ansible.builtin.apt:
+    name:
+      - build-essential
+      - make
+      - exuberant-ctags
+      - git
+      - python3-pip
+      - python3-setuptools
+      - python3-virtualenv
+      - libaio-dev
+      - pkgconf
+      - libgflags-dev
+      - liblz4-dev
+      - cmake
+      - libslirp-dev
+      - libglib2.0-dev
+      - socat
+      - libpixman-1-dev
+      - libssl-dev
+      - libjson-c-dev
+      - gdb
+      - rsync
+      - mosh
+      - tmux
+      - bison
+      - flex
+      - ncurses-dev
+      - libelf-dev
+      - bc
+      - zsh
+      - fzf
+      - mc
+      - curl
+      - rake
+    state: present
+    update_cache: no
+  become: true
+  become_method: sudo
+  become_user: root
+
+- name: Make sure meson is not installed by distro
+  ansible.builtin.apt:
+    name:
+      - meson
+    state: absent
+    update_cache: yes
+  become: true
+  become_method: sudo
+  become_user: root
+
+- name: Install meson with pip
+  ansible.builtin.pip:
+    name: meson>=0.58
+  become: true
+  become_method: sudo
+  become_user: root
+
+
+

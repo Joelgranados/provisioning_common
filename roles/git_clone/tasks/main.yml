@@ -1,0 +1,66 @@
+- name: "Print git repository Variables"
+  ansible.builtin.debug:
+    msg:
+      - src_dir {{ src_dir }}
+      - git_repo_name {{ git_repo_name }}
+      - git_repo_src_dir {{ git_repo_src_dir }}
+      - git_remote_url {{ git_remote_url }}
+      - git_remote_name {{ git_remote_name }}
+      - git_branch_name {{ git_branch_name }}
+
+- name: "Make sure {{ src_dir }} exists"
+  ansible.builtin.file:
+    path: "{{ src_dir }}"
+    state: directory
+
+- name: "Clone {{ git_remote_url }} to {{ git_repo_name }}"
+  ansible.builtin.command:
+    cmd: git clone -q {{ git_remote_url }} {{ git_repo_name }}
+    chdir: "{{ src_dir }}"
+  register: res
+  changed_when: res.rc == 0
+  failed_when:
+    - res.rc != 0
+    - res.stderr | default('') is not search("destination path .* already exists")
+
+- name: "Remove remote {{ git_remote_name }}"
+  ansible.builtin.command:
+    cmd: git remote remove {{ git_remote_name }}
+    chdir: "{{ git_repo_src_dir }}"
+  register: res
+  changed_when: res.rc == 0
+  failed_when:
+    - res.rc != 0
+    - '"No such remote" not in res.stderr'
+
+- name: "Add {{ git_remote_name }} to {{ git_repo_name }} remote list named {{ git_remote_name }}"
+  ansible.builtin.command:
+    cmd: git remote add {{git_remote_name}} {{git_remote_url}}
+    chdir: "{{ git_repo_src_dir }}"
+  register: res
+  changed_when: res.rc == 0
+  failed_when:
+    - res.rc != 0
+    - res.stderr | default('') is not search("remote .* already exists")
+
+- name: "Fetch everything from remote {{ git_remote_name }}"
+  ansible.builtin.command:
+    cmd: git fetch {{ git_remote_name }}
+    chdir: "{{ git_repo_src_dir }}"
+
+- name: "Checkout {{ git_branch_name }} from {{ git_remote_url }}"
+  ansible.builtin.command:
+    cmd: git checkout -b {{ git_branch_name }} --track {{ git_remote_name }}/{{ git_branch_name}}
+    chdir: "{{ git_repo_src_dir }}"
+  register: res
+  changed_when: res.rc == 0
+  failed_when:
+    - res.rc != 0
+    - res.stderr | default('') is not search(".*A branch named .* already exists.")
+
+- name: "Pull current branch"
+  ansible.builtin.command:
+    cmd: git pull {{git_remote_name}} {{git_branch_name}}
+    chdir: "{{ git_repo_src_dir }}"
+
+
