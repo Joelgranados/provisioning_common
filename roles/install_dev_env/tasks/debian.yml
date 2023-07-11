@@ -33,6 +33,7 @@
       - mc
       - curl
       - rake
+      - systemd-timesyncd
     state: present
     update_cache: no
   become: true
