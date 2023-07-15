@@ -1,3 +1,11 @@
+- name: "Check for Branch or Tag"
+  ansible.builtin.fail:
+    msg:
+      - "Please define git_branch_name or git_tag_name, but not both"
+      - "git_branch_name: {{ git_branch_name }}"
+      - "git_tag_name: {{ git_tag_name}}"
+  when: git_branch_name is defined and git_tag_name is defined
+
 - name: "Print git repository Variables"
   ansible.builtin.debug:
     msg:
@@ -6,7 +14,16 @@
       - git_repo_src_dir {{ git_repo_src_dir }}
       - git_remote_url {{ git_remote_url }}
       - git_remote_name {{ git_remote_name }}
-      - git_branch_name {{ git_branch_name }}
+
+- name: "Print git Branch name"
+  ansible.builtin.debug:
+    msg: git_branch_name {{ git_branch_name }}
+  when: git_branch_name is defined
+
+- name: "Print git Tag name:"
+  ansible.builtin.debug:
+    msg: git_tag_name {{ git_tag_name }}
+  when: git_tag_name is defined
 
 - name: "Make sure {{ src_dir }} exists"
   ansible.builtin.file:
@@ -45,7 +62,7 @@
 
 - name: "Fetch everything from remote {{ git_remote_name }}"
   ansible.builtin.command:
-    cmd: git fetch {{ git_remote_name }}
+    cmd: git fetch -t {{ git_remote_name }}
     chdir: "{{ git_repo_src_dir }}"
 
 - name: "Checkout {{ git_branch_name }} from {{ git_remote_url }}"
@@ -57,10 +74,18 @@
   failed_when:
     - res.rc != 0
     - res.stderr | default('') is not search(".*A branch named .* already exists.")
+  when: git_branch_name is defined
 
 - name: "Pull current branch"
   ansible.builtin.command:
     cmd: git pull {{git_remote_name}} {{git_branch_name}}
     chdir: "{{ git_repo_src_dir }}"
+  when: git_branch_name is defined
+
+- name: "Checkout {{ git_tag_name }} from {{ git_remote_url }}"
+  ansible.builtin.command:
+    cmd: git checkout -B {{ git_tag_name }} {{ git_tag_name }}
+    chdir: "{{ git_repo_src_dir }}"
+  when: git_tag_name is defined
 
 
