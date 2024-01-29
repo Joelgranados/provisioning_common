@@ -73,7 +73,7 @@
   changed_when: res.rc == 0
   failed_when:
     - res.rc != 0
-    - res.stderr | default('') is not search(".*A branch named .* already exists.")
+    - res.stderr | default('') is not search(".* branch named .* already exists.*")
   when: git_branch_name is defined
 
 - name: "Pull current branch"
