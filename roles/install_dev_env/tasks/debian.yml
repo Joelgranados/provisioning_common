@@ -1,3 +1,13 @@
+- name: Make sure meson is not installed by distro
+  ansible.builtin.apt:
+    name:
+      - meson
+    state: absent
+    update_cache: yes
+  become: true
+  become_method: sudo
+  become_user: root
+
 - name: Install development packages
   ansible.builtin.apt:
     name:
@@ -6,6 +16,7 @@
       - exuberant-ctags
       - git
       - python3-pip
+      - pipx
       - python3-setuptools
       - python3-virtualenv
       - libaio-dev
@@ -34,28 +45,9 @@
       - curl
       - rake
       - systemd-timesyncd
+      - meson>=1.2
     state: present
     update_cache: no
   become: true
   become_method: sudo
   become_user: root
-
-- name: Make sure meson is not installed by distro
-  ansible.builtin.apt:
-    name:
-      - meson
-    state: absent
-    update_cache: yes
-  become: true
-  become_method: sudo
-  become_user: root
-
-- name: Install meson with pip
-  ansible.builtin.pip:
-    name: meson>=0.58
-  become: true
-  become_method: sudo
-  become_user: root
-
-
-
