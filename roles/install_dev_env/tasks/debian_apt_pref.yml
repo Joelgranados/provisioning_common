@@ -1,0 +1,62 @@
+- name: "Create {{ aptpref_preferences_root }}"
+  ansible.builtin.file:
+    path: "{{ aptpref_preferences_root }}"
+    state: directory
+  become: true
+  become_method: sudo
+  become_user: root
+
+- name: "Copy {{ item }} to {{ aptpref_preferences_root }}"
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ aptpref_preferences_root }}/{{ item }}"
+  loop:
+    - stable.pref
+    - unstable.pref
+    - testing.pref
+    - experimental.pref
+  become: true
+  become_method: sudo
+  become_user: root
+
+- name: "Create {{ aptpref_sources_root }}"
+  ansible.builtin.file:
+    path: "{{ aptpref_sources_root }}"
+    state: directory
+  become: true
+  become_method: sudo
+  become_user: root
+
+- name: "Copy {{ item }} to {{ aptpref_sources_root }}"
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ aptpref_sources_root }}/{{ item }}"
+  loop:
+    - stable.list
+    - unstable.list
+    - testing.list
+    - experimental.list
+  become: true
+  become_method: sudo
+  become_user: root
+
+- name: "Rename sources.list"
+  ansible.builtin.command:
+    cmd: "mv {{ aptpref_root }}/sources.list {{ aptpref_root }}/sources.list.orig"
+  register: res
+  changed_when : res.rc == 0
+  failed_when:
+    - res.rc != 0
+    - res.stderr | default('') is not search(".*No such file or directory.*")
+  become: true
+  become_method: sudo
+  become_user: root
+
+- name: "Run apt update"
+  ansible.builtin.command:
+    cmd : "apt-get update"
+  become: true
+  become_method: sudo
+  become_user: root
+
+ 

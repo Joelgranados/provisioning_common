@@ -51,3 +51,9 @@
   become: true
   become_method: sudo
   become_user: root
+
+- name: Configure aptitude to include stable, testing, unstable and experimental
+  import_tasks: debian_apt_pref.yml
+
+
+
