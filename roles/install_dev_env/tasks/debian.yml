@@ -1,12 +1,5 @@
-- name: Make sure meson is not installed by distro
-  ansible.builtin.apt:
-    name:
-      - meson
-    state: absent
-    update_cache: yes
-  become: true
-  become_method: sudo
-  become_user: root
+- name: Configure aptitude to include stable, testing, unstable and experimental
+  import_tasks: debian_apt_pref.yml
 
 - name: Install development packages
   ansible.builtin.apt:
@@ -45,15 +38,25 @@
       - curl
       - rake
       - systemd-timesyncd
-      - meson>=1.2
+      - neomutt
+      - abook
+      - mailcap
+      - msmtp
+      - iptables
     state: present
     update_cache: no
+    default_release: testing
   become: true
   become_method: sudo
   become_user: root
 
-- name: Configure aptitude to include stable, testing, unstable and experimental
-  import_tasks: debian_apt_pref.yml
+- name: Install specific versions of packages with satisfy
+  ansible.builtin.shell: |
+    apt -y satisfy -t testing "isync (>=1.4)"
+    apt -y satisfy -t testing "meson (>=1.2)"
+  become: true
+  become_method: sudo
+  become_user: root
 
 
 
