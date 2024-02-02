@@ -12,6 +12,7 @@
       - pipx
       - python3-setuptools
       - python3-virtualenv
+      - python3-pexpect
       - libaio-dev
       - pkgconf
       - libgflags-dev
