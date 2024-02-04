@@ -45,6 +45,8 @@
       - mailcap
       - msmtp
       - iptables
+      - btop
+      - wm3
     state: present
     update_cache: no
   become: true
