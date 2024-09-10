@@ -2,4 +2,4 @@ aptpref_name: "apt_preferences"
 aptpref_root: "/etc/apt/"
 aptpref_preferences_root: "{{ aptpref_root }}/preferences.d"
 aptpref_sources_root: "{{ aptpref_root }}/sources.list.d"
-
+do_aptpref: "no"

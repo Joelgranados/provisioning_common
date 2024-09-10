@@ -1,5 +1,6 @@
 - name: Configure aptitude to include stable, testing, unstable and experimental
   import_tasks: debian_apt_pref.yml
+  when: do_aptpref == "yes"
 
 - name: Install development packages
   ansible.builtin.apt:
