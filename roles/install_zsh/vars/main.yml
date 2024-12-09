@@ -1,0 +1,12 @@
+zsh_name: "zsh"
+zsh_usr: "{{ usr | default('joel') }}"
+prezto_usr_home: "/home/{{usr}}"
+prezto_usr_src: "{{prezto_usr_home}}/src"
+prezto_repo_name: "prezto"
+prezto_repo_url: "https://github.com/Joelgranados/prezto.git"
+prezto_src: "{{prezto_usr_src}}/{{prezto_repo_name}}"
+prezto_home_link: "{{prezto_usr_home}}/.zprezto"
+prezto_ln_script: "link_home.sh"
+
+
+

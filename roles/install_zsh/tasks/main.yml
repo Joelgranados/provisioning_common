@@ -1,0 +1,63 @@
+- name: "Print variables for {{ zsh_name }}"
+  ansible.builtin.debug:
+    msg:
+      - zsh_name "{{ zsh_name }}"
+      - zsh_usr "{{ zsh_usr }}"
+      - prezto_usr_home "{{prezto_usr_home}}"
+      - prezto_usr_src "{{prezto_usr_src}}"
+      - prezto_repo_name "{{prezto_repo_name}}"
+      - prezto_repo_url "{{prezto_repo_url}}"
+      - prezto_src "{{prezto_src}}"
+      - prezto_home_link "{{prezto_home_link}}"
+
+- name: Make {{zsh_name}} the default shell for user {{zsh_usr}}
+  ansible.builtin.shell:
+    cmd: "chsh -s $(which zsh) {{zsh_usr}}"
+  become: true
+  become_method: sudo
+  become_user: root
+
+- name: Download {{prezto_name}} into {{prezto_src}}
+  ansible.builtin.include_role:
+    name: git_clone
+  vars:
+    - src_dir : "{{prezto_usr_src}}"
+    - git_repo_name : "{{ prezto_repo_name }}"
+    - git_remote_url : "{{ prezto_repo_url }}"
+    - git_remote_name: "origin"
+    - git_branch_name: "master"
+    - git_repo_src_dir: "{{ prezto_src }}"
+
+- name: "Update all submodules in {{ prezto_repo_name}}"
+  ansible.builtin.command:
+    cmd: git submodule update --init --recursive
+    chdir: "{{ prezto_src }}"
+
+- name: Check to see if {{prezto_home_link}}
+  ansible.builtin.stat:
+    path : "{{prezto_home_link}}"
+  register: prezto_stat_result
+
+- name: "Move {{prezto_home_link}} if it exists"
+  ansible.builtin.command:
+    cmd: "mv {{prezto_home_link}} {{prezto_home_link}}.old"
+  when: prezto_stat_result.stat.exists
+
+- name: "Create a new link to {{prezto_src}} from {{prezto_home_link}}"
+  ansible.builtin.file:
+    src: "{{prezto_src}}"
+    dest: "{{prezto_home_link}}"
+    state: link
+    force: true
+
+- name: "Install {{prezto_ln_script}} in /tmp"
+  ansible.builtin.copy:
+    src: "{{prezto_ln_script}}"
+    dest: "/tmp"
+    mode: u+x,g+x,o+x
+
+- name: "Run {{prezto_ln_script}}"
+  ansible.builtin.shell:
+    cmd: "/tmp/{{prezto_ln_script}}"
+
+
