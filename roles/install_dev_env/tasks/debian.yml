@@ -62,5 +62,12 @@
   become_method: sudo
   become_user: root
 
-
-
+#- name: Install from URL
+#  ansible.builtin.apt:
+#    deb: "https://discord.com/api/download?platform=linux&format=deb"
+#  become: true
+#  become_method: sudo
+#  become_user: root
+#
+#- name: Configure aptitude to include stable, testing, unstable and experimental
+#  import_tasks: debian_apt_pref.yml
