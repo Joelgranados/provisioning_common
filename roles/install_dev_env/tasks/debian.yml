@@ -46,18 +46,11 @@
       - msmtp
       - iptables
       - btop
-      - wm3
       - ccache
+      - isync
+      - meson
     state: present
     update_cache: no
-  become: true
-  become_method: sudo
-  become_user: root
-
-- name: Install specific versions of packages with satisfy
-  ansible.builtin.shell: |
-    apt -y satisfy "isync (>=1.4)"
-    apt -y satisfy "meson (>=1.2)"
   become: true
   become_method: sudo
   become_user: root
