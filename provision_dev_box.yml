@@ -1,0 +1,14 @@
+- name: Provision development box
+  gather_facts: true
+  hosts: all
+
+  tasks:
+    - name : Install development packages
+      ansible.builtin.include_role:
+        name: "{{item}}"
+      loop:
+        - install_dev_env
+        - install_vim
+        - install_zsh
+        - install_tmux
+
