@@ -16,14 +16,8 @@
       - clangd
       - ripgrep
       - fd-find
+      - neovim
     state: present
-  become: true
-  become_method: sudo
-  become_user: root
-
-- name: "Install {{ nvim_name }} stable"
-  ansible.builtin.command:
-    cmd: apt satisfy "neovim (>=0.9.5)"
   become: true
   become_method: sudo
   become_user: root
