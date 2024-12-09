@@ -1,0 +1,77 @@
+- name: "Print variables for {{ nvim_name }}"
+  ansible.builtin.debug:
+    msg:
+      - nvim_name "{{ nvim_name }}"
+      - nvim_usr "{{ nvim_usr }}"
+      - nvim_usr_home "{{ nvim_usr_home }}"
+      - nvim_usr_src "{{ nvim_usr_src }}"
+      - nvim_repo_name "{{ nvim_repo_name }}"
+      - nvim_src "{{ nvim_src }}"
+      - nvim_repo_url "{{ nvim_repo_url }}"
+      - nvim_deb_url "{{ nvim_deb_url }}"
+
+- name: "Install deps for {{ nvim_name }}"
+  ansible.builtin.apt:
+    name:
+      - clangd
+      - ripgrep
+      - fd-find
+    state: present
+  become: true
+  become_method: sudo
+  become_user: root
+
+- name: "Install {{ nvim_name }} stable"
+  ansible.builtin.command:
+    cmd: apt satisfy "neovim (>=0.9.5)"
+  become: true
+  become_method: sudo
+  become_user: root
+
+- name : "Getting {{ nvim_repo_name }}"
+  ansible.builtin.include_role:
+    name: git_clone
+  vars:
+    - src_dir : "{{nvim_usr_src}}"
+    - git_repo_name : "{{ nvim_repo_name }}"
+    - git_remote_url : "{{ nvim_repo_url }}"
+    - git_remote_name: "origin"
+    - git_branch_name: "master"
+    - git_repo_src_dir: "{{ nvim_src }}"
+
+- name: "Update all submodules in {{ nvim_repo_name}}"
+  ansible.builtin.command:
+    cmd: git submodule update --init --recursive
+    chdir: "{{ nvim_src }}"
+
+- name: "Update .config"
+  ansible.builtin.file:
+    dest: "{{ nvim_usr_home }}/.config/nvim"
+    src: "{{ nvim_src }}/nvim"
+    state: link
+
+- name: "Move .vimrc to .vimrc-old"
+  ansible.builtin.command:
+    cmd: mv "{{nvim_usr_home}}/.vimrc" "{{nvim_usr_home}}/.vimrc-old"
+  register: res
+  changed_when: res.rc == 0
+  failed_when:
+    - res.rc != 0
+    - res.stderr | default('') is not search(".*No such file or directory.*")
+
+- name: "Update .vimrc"
+  ansible.builtin.file:
+    dest: "{{nvim_usr_home}}/.vimrc"
+    src: "{{ nvim_usr_home }}/.config/nvim/init.vim"
+    state: link
+
+- name: "Install all plugins"
+  ansible.builtin.command:
+    cmd: nvim +'PluginInstall' +':q' +':q'
+
+- name: "Add vim as an alternative to nvim"
+  ansible.builtin.shell:
+    cmd: update-alternatives --install /usr/bin/vim vim $(which nvim) 60
+  become: true
+  become_method: sudo
+  become_user: root

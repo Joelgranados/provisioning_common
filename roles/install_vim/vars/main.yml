@@ -1,0 +1,13 @@
+nvim_name: "nvim"
+nvim_usr: "{{ usr | default('joel') }}"
+nvim_usr_home: "/home/{{ usr }}"
+nvim_usr_src: "{{ nvim_usr_home }}/src"
+nvim_repo_name: "nvim_conf"
+nvim_src: "{{ nvim_usr_src }}/{{ nvim_repo_name }}"
+nvim_repo_url: "git@github.com:Joelgranados/nvim_conf.git"
+nvim_deb_url: "https://github.com/neovim/neovim/releases/download/stable/nvim-linux64.deb"
+
+nvim_bundle_dir: "{{nvim_usr_home}}/.vim/bundle/"
+nvim_vundle_name: "Vundle.vim"
+nvim_vundle_url: "https://github.com/VundleVim/Vundle.vim.git"
+
