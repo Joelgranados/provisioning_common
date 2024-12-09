@@ -47,6 +47,7 @@
       - iptables
       - btop
       - wm3
+      - ccache
     state: present
     update_cache: no
   become: true
