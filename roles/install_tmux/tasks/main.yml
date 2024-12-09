@@ -1,0 +1,12 @@
+- name: "Print variables for {{tmux_name}}"
+  ansible.builtin.debug:
+    msg:
+    - tmux_name "{{tmux_name}}"
+    - tmux_usr "{{ tmux_usr }}"
+    - tmux_usr_home "{{tmux_usr_home}}"
+    - tmux_config "{{tmux_config}}"
+
+- name : "Install {{tmux_name}} configuration file"
+  ansible.builtin.copy:
+    src: tmux.conf
+    dest: "{{tmux_config}}"

@@ -1,0 +1,4 @@
+tmux_name: "tmux"
+tmux_usr: "{{ usr | default('joel') }}"
+tmux_usr_home: "/home/{{usr}}"
+tmux_config: "{{tmux_usr_home}}/.tmux.conf"
