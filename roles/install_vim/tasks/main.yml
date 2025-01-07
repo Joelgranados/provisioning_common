@@ -38,6 +38,11 @@
     cmd: git submodule update --init --recursive
     chdir: "{{ nvim_src }}"
 
+- name: "Make sure {{ nvim_usr_home }}/.config is there"
+  ansible.builtin.file:
+    dest: "{{ nvim_usr_home }}/.config"
+    state: directory
+
 - name: "Update .config"
   ansible.builtin.file:
     dest: "{{ nvim_usr_home }}/.config/nvim"
