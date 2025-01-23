@@ -49,6 +49,10 @@
       - ccache
       - isync
       - meson
+      # for the kernel
+      - libgmp-dev
+      - libmpc-dev
+      - libmpfr-dev
     state: present
     update_cache: no
   become: true
